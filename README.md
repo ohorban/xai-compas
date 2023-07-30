@@ -17,7 +17,7 @@ There are machine learning models that make interpretability an easy task. Linea
 
 2. **Interpretability of Coefficients**: The coefficients of the linear regression model represent the change in the output for a one-unit change in the corresponding input. This provides a straightforward way to interpret the importance of each variable.
 
-3. **Global Model Interpretation**: Linear regression provides a global interpretation of the model since it defines a single relationship across the entire data space, unlike more complex models that might have local interpretations.
+3. **Global Model Interpretation**: Linear regression provides a global interpretation of the model since it defines a single relationship across the entire data space, unlike more complex models that might have local interpretations. (more about this in following chapters)
 
 4. **Transparency**: The mechanics of linear regression are well-understood, and there are no hidden layers or complex structures that are hard to interpret, as is the case with some neural networks.
 
@@ -117,16 +117,94 @@ where $y_i$ is the target value for sample $i$, and $\bar{y}$ is the mean target
 The intuitive nature, interpretability, and transparency of Decision Trees contribute to their status as a strong model in the context of explainable AI.
 
 ## Local Model-agnostic Methods
-Local explainability methods explain the behavior of the model at a specific data point (individual prediction). Model-agnostic interpretation methods are ones that work the same no matter what model they are applied to.
+Once we get to more complicated models such as XGBoost or Neural Netwworks, global interpretabiliy becomes a more complicated task, which is why we need to come up with better ways to intepret the model. **Local explainability** methods explain the behavior of the model at a specific data point (individual prediction). **Model-agnostic** methods can be applied to any machine learning model, regardless of its internal workings. They don't require access to the model's architecture, parameters, or training data.
 
-### Local Surrogate Models
+### LIME (Local Interpretable Model-agnostic Explanations)
+LIME (Local Interpretable Model-agnostic Explanations) is a technique that helps to explain the predictions of a complex machine learning model (the "black box"). It does this by constructing a **surrogate model**, which is a simpler, interpretable model that approximates the black box's behavior for a specific instance or local region. Here's how LIME utilizes a surrogate model:
 
-**Local:** estimates the blackbox around a specific proximity, gives interpretable results for specific input data point.
-**Global:** estimates and explains the entire model.
-**Model-agnostic:** gives interpretable results no matter what family is the blackbox from (even deep neural networks)
-**Surrogate:** a simpler, explainable model.
+1. **Select an Instance**: Choose a specific data point (instance) that you want to understand.
 
-## SHAP
+2. **Generate Perturbed Samples**: Create variations (perturbed samples) of this instance by altering its features slightly.
+
+3. **Get Predictions for Perturbed Samples**: Input the perturbed samples into the black box model to obtain predictions.
+
+4. **Weight the Perturbed Samples**: Assign a weight to each perturbed sample based on its similarity to the original instance, using a kernel function:
+
+   $$ w_i = \exp\left(-\frac{{\|x - x_i\|^2}}{{\sigma^2}}\right) $$
+
+5. **Train a Surrogate Model**: Using the perturbed samples, their weights, and the black box model's predictions, train a surrogate model, such as Linear Regression, Logistic Regression or a Decision Tree.
+
+6. **Analyze the Surrogate Model**: By examining the surrogate model's structure and decision rules, you gain insights into why the black box model made its specific prediction for the original instance.
+
+7. **Local Fidelity**: The surrogate model's accuracy, or "local fidelity," is expected to be good only for instances close to the original one. It's not a global approximation of the black box model but rather a local reflection of its behavior.
+
+By employing a surrogate model, LIME makes it possible to analyze and trust the predictions of complex models, facilitating their use in critical applications where understanding the reasoning behind predictions is essential.
+![LIME1](img/Lime1.png)
+
+### Shapley Values
+Shapley Values originate from cooperative game theory and have been adapted to explain the output of machine learning models. They provide a unified measure of feature importance by fairly distributing the "contribution" of each feature to a prediction.
+
+Shapley Values explain how much each feature in your dataset contributes to a particular prediction. Think of a prediction as a game where each feature is a player, and the Shapley Value is the fair payout for each player, considering all possible combinations they can play in.
+
+The Shapley Value ensures that the total contribution of all features equals the difference between the prediction for the instance and the average prediction for all instances. The "fair" distribution follows three principles:
+   - **Efficiency**: The total Shapley Values for all features add up to the total effect.
+   - **Symmetry**: If two features contribute equally, their Shapley Values are the same.
+   - **Linearity**: The Shapley Value of a combined game equals the sum of the Shapley Values of the individual games.
+
+The Shapley Value for a feature \(i\) is computed as:
+
+$$ \phi_i(f) = \sum_{S \subseteq N \setminus \{i\}} \frac{{|S|!(|N|-|S|-1)!}}{{|N|!}} [f(S \cup \{i\}) - f(S)] $$
+
+Where:
+- $N$: The set of all features.
+- $S$: A subset of features without feature $i$.
+- $f(S)$: The prediction made by the model with only the features in $S$.
+- $f(S \cup \{i\})$: The prediction made by the model with the features in $S$ plus feature $i$.
+- $|S|$: The number of features in $S$.
+- $|N|$: The total number of features.
+
+Shapley Values provide a consistent way to interpret model predictions by quantifying the contribution of each feature. They are particularly useful for:
+- **Understanding Individual Predictions**: Breaking down the prediction for a specific instance into the contribution of each feature.
+- **Global Importance**: Averaging Shapley Values over many instances to understand overall feature importance.
+- **Fairness and Transparency**: Providing a "fair" explanation that meets certain desirable mathematical properties.
+
+Computing Shapley Values can be computationally intensive, as it requires evaluating the model for all possible subsets of features. Various approximations and optimized algorithms have been developed to make the computation more tractable for large datasets and complex models.
+
+## Global Model-agnostic Methods
+
+### SHAP (SHapley Additive exPlanations)
+SHAP (SHapley Additive exPlanations) is a method that leverages Shapley Values to explain the output of any machine learning model. SHAP unifies several existing feature attribution methods and provides a consistent approach to interpreting model predictions.
+
+SHAP is based on Shapley Values from cooperative game theory. It calculates the fair contribution of each feature to a prediction, considering all possible combinations of features.
+
+SHAP assigns each feature an importance value for a particular prediction that is additive. The sum of the SHAP values for all features equals the difference between the model's prediction and the average prediction for all instances.
+
+For a given instance and prediction model, the SHAP value for feature \(i\) is computed similarly to the Shapley Value:
+
+$$ \text{SHAP}_i(f) = \sum_{S \subseteq N \setminus \{i\}} \frac{{|S|!(|N|-|S|-1)!}}{{|N|!}} [f(S \cup \{i\}) - f(S)] $$
+
+Where:
+- $N$: The set of all features.
+- $S$: A subset of features without feature $i$.
+- $f(S)$: The prediction made by the model with only the features in $S$.
+- $f(S \cup \{i\})$: The prediction made by the model with the features in $S$ plus feature $i$.
+- $|S|$: The number of features in $S$.
+- $N|$: The total number of features.
+
+SHAP values provide insights into:
+- **Individual Predictions**: How each feature contributes to a particular prediction.
+- **Global Importance**: The overall importance of features across many predictions.
+- **Impact of a Feature's Value**: How a feature's value contributes positively or negatively to a prediction.
+
+
+Computing exact SHAP values can be computationally expensive. Several algorithms, such as Kernel SHAP and Tree SHAP, have been developed to approximate SHAP values more efficiently. These leverage specific model structures or kernel methods to provide accurate approximations with lower computational cost.
+
+
+SHAP comes with various visualization tools that allow users to visually interpret both individual predictions and global feature importance. Examples include SHAP summary plots, dependence plots, and waterfall plots.
+
+### Conclusion
+
+SHAP offers a consistent and theoretically grounded way to interpret complex machine learning models. By building on Shapley Values, it provides both local explanations (for individual predictions) and global insights (overall feature importance). With a focus on fairness, transparency, and efficiency, SHAP has become a widely used tool for machine learning interpretability. Various algorithms and visualization techniques within the SHAP framework make it adaptable to different models and datasets, enhancing its practical applicability.
 
 ## Risk Assessment
 
