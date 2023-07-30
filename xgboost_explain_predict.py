@@ -63,7 +63,7 @@ for col in instance_to_explain.columns:
 # Compute SHAP values for the instance to explain (using encoded data)
 instance_to_explain = X_test.iloc[[instance_index]] # use encoded data
 shap_values = explainer(instance_to_explain)
-class_index = 2 # 2 = High, 1 = Medium, 0 = Low
+class_index = 1 # 2 = High, 1 = Medium, 0 = Low
 instance_shap_values = shap_values.values[0, :, class_index]
 
 # Get the original feature names

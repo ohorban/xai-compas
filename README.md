@@ -171,6 +171,7 @@ Shapley Values provide a consistent way to interpret model predictions by quanti
 Computing Shapley Values can be computationally intensive, as it requires evaluating the model for all possible subsets of features. Various approximations and optimized algorithms have been developed to make the computation more tractable for large datasets and complex models.
 
 ## Global Model-agnostic Methods
+Ideally, we would want to give a general overview about how a model is making predictions for all data points, not just locally. For that there exist Global methods of interpretation.
 
 ### SHAP (SHapley Additive exPlanations)
 SHAP (SHapley Additive exPlanations) is a method that leverages Shapley Values to explain the output of any machine learning model. SHAP unifies several existing feature attribution methods and provides a consistent approach to interpreting model predictions.
@@ -179,7 +180,7 @@ SHAP is based on Shapley Values from cooperative game theory. It calculates the 
 
 SHAP assigns each feature an importance value for a particular prediction that is additive. The sum of the SHAP values for all features equals the difference between the model's prediction and the average prediction for all instances.
 
-For a given instance and prediction model, the SHAP value for feature \(i\) is computed similarly to the Shapley Value:
+For a given instance and prediction model, the SHAP value for feature $i$ is computed similarly to the Shapley Value:
 
 $$ \text{SHAP}_i(f) = \sum_{S \subseteq N \setminus \{i\}} \frac{{|S|!(|N|-|S|-1)!}}{{|N|!}} [f(S \cup \{i\}) - f(S)] $$
 
@@ -199,15 +200,107 @@ SHAP values provide insights into:
 
 Computing exact SHAP values can be computationally expensive. Several algorithms, such as Kernel SHAP and Tree SHAP, have been developed to approximate SHAP values more efficiently. These leverage specific model structures or kernel methods to provide accurate approximations with lower computational cost.
 
-
 SHAP comes with various visualization tools that allow users to visually interpret both individual predictions and global feature importance. Examples include SHAP summary plots, dependence plots, and waterfall plots.
 
-### Conclusion
-
-SHAP offers a consistent and theoretically grounded way to interpret complex machine learning models. By building on Shapley Values, it provides both local explanations (for individual predictions) and global insights (overall feature importance). With a focus on fairness, transparency, and efficiency, SHAP has become a widely used tool for machine learning interpretability. Various algorithms and visualization techniques within the SHAP framework make it adaptable to different models and datasets, enhancing its practical applicability.
-
 ## Risk Assessment
+Risk-assessment algorithms in the justice system are statistical tools designed to forecast an individual's likelihood of reoffending. These algorithms analyze various factors, such as criminal history, age, employment status, and sometimes even personality traits, to generate a score that represents the defendant's risk to society. Utilized in courtrooms across the United States and other countries, they are implemented at various stages of the criminal justice process, including pre-trial, sentencing, and parole decisions. Proponents of these tools argue that they can bring consistency and objectivity to legal proceedings, aid in reducing overcrowded prison populations, and facilitate individualized sentencing. However, critics raise significant concerns about their transparency, accuracy, potential for bias, especially racial disparities, and the ethical implications of relying on machine-driven decisions in matters of criminal justice. The integration of risk-assessment algorithms into the legal system marks a complex intersection between technology, law, and social responsibility, and continues to be a subject of debate and scrutiny.
+Explainable AI (XAI) is a critical concept that can be applied to risk-assessment algorithms in the justice system to address some of the challenges and concerns surrounding their use. Unlike traditional "black box" models where the decision-making process is hidden, XAI aims to make AI decisions transparent, interpretable, and understandable to human users. By incorporating explainable AI into risk-assessment algorithms, the justice system could provide clear insights into how these tools derive their risk scores. This increased transparency could promote trust among judges, lawyers, and the public and might also enable the identification and mitigation of any underlying biases, such as racial disparities. Furthermore, explainable models can facilitate compliance with legal and ethical standards, allowing for proper scrutiny and challenge in court. In essence, explainable AI offers a pathway to more responsible and accountable use of machine learning in the justice system, bridging the gap between technological innovation and the principles of fairness, equality, and human rights that underpin legal practice. It can help ensure that these algorithms are not just tools for efficiency, but also instruments that uphold the integrity and humanity of the legal process.
+I trained an XGBoost model to predict the defendants COMPAS score based on the outputs of the original risk-assessment algorithm and applied SPAH analysis to show what features where the most important when making a prediction about whether a person is going to reoffend in the future. Ideally, I would have access to the original data used for training COMPAS.
+```
+# Importing necessary libraries
+import xgboost as xgb
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder
+from sklearn.metrics import accuracy_score
+import shap
 
+# Load the CSV file
+file_path = 'data/compas-scores-raw.csv' # Change this to your file path
+data = pd.read_csv(file_path)
+
+# Preprocessing
+# Separating the features and target
+exclude_columns = ['ScoreText', 'DecileScore', 'RawScore', 'DisplayText', 'RecSupervisionLevelText', 'RecSupervisionLevel', 'Person_ID', 'AssessmentID', 'Case_ID']
+
+X = data.drop(columns=exclude_columns)
+y = data['ScoreText']
+
+# Encoding the target variable
+label_encoder_y = LabelEncoder()
+y_encoded = label_encoder_y.fit_transform(y)
+
+# Copy the original dataset before encoding
+X_original = X.copy()
+
+# Encoding the categorical features and storing the encoders
+encoders = {}
+for col in X.columns:
+    if X[col].dtype == 'object':
+        label_encoder_x = LabelEncoder()
+        X[col] = label_encoder_x.fit_transform(X[col].astype(str))
+        encoders[col] = label_encoder_x
+
+# Splitting the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y_encoded, test_size=0.2, random_state=42)
+
+# Train the XGBoost model
+model = xgb.XGBClassifier(objective='multi:softprob', num_class=3)
+model.fit(X_train, y_train)
+
+# Make predictions
+y_pred = model.predict(X_test)
+accuracy = accuracy_score(y_test, y_pred)
+print("Model Accuracy: {:.2f}%".format(accuracy * 100))
+
+# Explain predictions using SHAP
+# Create a tree explainer
+explainer = shap.Explainer(model)
+
+# Replace the encoded values with original text in the instance to be explained
+instance_index = 0
+instance_to_explain = X_test.iloc[[instance_index]].copy() # create a copy to avoid warnings
+original_instance = X_original.iloc[[instance_index]].copy()
+
+# Map back the encoded features to the original text using the stored encoders
+for col in instance_to_explain.columns:
+    if col in encoders:
+        instance_to_explain[col] = instance_to_explain[col].apply(lambda x: encoders[col].inverse_transform([x])[0])
+
+# Compute SHAP values for the instance to explain (using encoded data)
+instance_to_explain = X_test.iloc[[instance_index]] # use encoded data
+shap_values = explainer(instance_to_explain)
+class_index = 2 # 2 = High, 1 = Medium, 0 = Low
+instance_shap_values = shap_values.values[0, :, class_index]
+
+# Get the original feature names
+original_instance = X_original.iloc[instance_index]
+
+# Reconstruct the original labels for the features
+original_labels = []
+for col in original_instance.index:
+    if col in encoders:
+        value = encoders[col].inverse_transform([instance_to_explain[col].iloc[0]])[0]
+        original_labels.append(f"{col} = {value}")
+    else:
+        original_labels.append(col)
+
+# Sort SHAP values and corresponding feature names
+sorted_indices = np.argsort(instance_shap_values)
+sorted_shap_values = instance_shap_values[sorted_indices]
+sorted_feature_names = [original_labels[i] for i in sorted_indices]
+
+# Plot the waterfall chart
+plt.barh(sorted_feature_names, sorted_shap_values)
+plt.xlabel('SHAP Value')
+plt.title('Waterfall Plot')
+plt.show()
+```
+
+One of the interesting findings is that the most predictive feature of a person being classified as Medium risk of reoffending is purely being hispanic:
+![shap_med]('img/shap_med')
 
 
 
