@@ -28,11 +28,11 @@ The general formula for a simple linear regression (one independent variable) is
 $$ y = \beta_0 + \beta_1 x + \epsilon $$
 
 where:
-- $ y $ is the dependent variable
-- $ \beta_0 $ is the intercept
-- $ \beta_1 $ is the slope of the line
-- $ x $ is the independent variable
-- $ \epsilon $ is the random error term
+- $y$ is the dependent variable
+- $\beta_0$ is the intercept
+- $\beta_1$ is the slope of the line
+- $x$ is the independent variable
+- $\epsilon$ is the random error term
 
 For multiple linear regression, where there are more than one independent variables, the equation extends to:
 
