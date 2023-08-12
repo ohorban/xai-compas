@@ -162,7 +162,7 @@ Where:
 
 Shapley Values provide a consistent way to interpret model predictions by quantifying the contribution of each feature. They are particularly useful for:
 - **Understanding Individual Predictions**: Breaking down the prediction for a specific instance into the contribution of each feature.
-- **Global Importance**: Averaging Shapley Values over many instances to understand overall feature importance.
+- **Global Importance**: Averaging Shapley Values over many instances to understand overall feature importance (this process is called SHapley Additive exPlanations or SHAP for short and will be discussed in the following chapter)
 - **Fairness and Transparency**: Providing a "fair" explanation that meets certain desirable mathematical properties.
 
 Computing Shapley Values can be computationally intensive, as it requires evaluating the model for all possible subsets of features. Various approximations and optimized algorithms have been developed to make the computation more tractable for large datasets and complex models.
