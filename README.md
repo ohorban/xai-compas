@@ -179,7 +179,7 @@ SHAP assigns each feature an importance value for a particular prediction that i
 
 For a given instance and prediction model, the SHAP value for feature $i$ is computed similarly to the Shapley Value:
 
-$$ \text{SHAP}_i(f) = \sum_{S \subseteq N \setminus \{i\}} \frac{{|S|!(|N|-|S|-1)!}}{{|N|!}} (f(S \cup \{i\}) - f(S)) $$
+$$ \text{SHAP}_i(f) = \sum_{S \subseteq N \setminus \{i\}} \frac{{|S|!(|N|-|S|-1)!}}{{|N|!}} [f(S \cup \{i\}) - f(S)] $$
 
 Where:
 - $N$: The set of all features.
@@ -201,7 +201,9 @@ SHAP comes with various visualization tools that allow users to visually interpr
 
 ## Risk Assessment
 Risk-assessment algorithms in the justice system are statistical tools designed to forecast an individual's likelihood of reoffending. These algorithms analyze various factors, such as criminal history, age, employment status, and sometimes even personality traits, to generate a score that represents the defendant's risk to society. Utilized in courtrooms across the United States and other countries, they are implemented at various stages of the criminal justice process, including pre-trial, sentencing, and parole decisions. Proponents of these tools argue that they can bring consistency and objectivity to legal proceedings, aid in reducing overcrowded prison populations, and facilitate individualized sentencing. However, critics raise significant concerns about their transparency, accuracy, potential for bias, especially racial disparities, and the ethical implications of relying on machine-driven decisions in matters of criminal justice. The integration of risk-assessment algorithms into the legal system marks a complex intersection between technology, law, and social responsibility, and continues to be a subject of debate and scrutiny.
+
 Explainable AI (XAI) is a critical concept that can be applied to risk-assessment algorithms in the justice system to address some of the challenges and concerns surrounding their use. Unlike traditional "black box" models where the decision-making process is hidden, XAI aims to make AI decisions transparent, interpretable, and understandable to human users. By incorporating explainable AI into risk-assessment algorithms, the justice system could provide clear insights into how these tools derive their risk scores. This increased transparency could promote trust among judges, lawyers, and the public and might also enable the identification and mitigation of any underlying biases, such as racial disparities. Furthermore, explainable models can facilitate compliance with legal and ethical standards, allowing for proper scrutiny and challenge in court. In essence, explainable AI offers a pathway to more responsible and accountable use of machine learning in the justice system, bridging the gap between technological innovation and the principles of fairness, equality, and human rights that underpin legal practice. It can help ensure that these algorithms are not just tools for efficiency, but also instruments that uphold the integrity and humanity of the legal process.
+
 I trained an XGBoost model to predict the defendants COMPAS score based on the outputs of the original risk-assessment algorithm and applied SPAH analysis to show what features where the most important when making a prediction about whether a person is going to reoffend in the future. Ideally, I would have access to the original data used for training COMPAS.
 
 Visit [xgboost_explain_predict.py](xgboost_explain_predict.py) for implementation details.
