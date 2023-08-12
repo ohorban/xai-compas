@@ -127,7 +127,7 @@ LIME (Local Interpretable Model-agnostic Explanations) is a technique that helps
 
 4. **Weight the Perturbed Samples**: Assign a weight to each perturbed sample based on its similarity to the original instance, using a kernel function:
 
-   $$ w_i = e^{-\frac{{\|x - x_i\|^2}}{{\sigma^2}}} $$
+   $ w_i = e^{-\frac{{\|x - x_i\|^2}}{{\sigma^2}}} $
 
 5. **Train a Surrogate Model**: Using the perturbed samples, their weights, and the black box model's predictions, train a surrogate model, such as Linear Regression, Logistic Regression or a Decision Tree.
 
