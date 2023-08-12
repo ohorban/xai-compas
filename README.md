@@ -297,7 +297,7 @@ plt.show()
 ```
 
 One of the interesting findings is that the most predictive feature of a person being classified as Medium risk of reoffending is purely being hispanic:
-![shap_med]('img/shap_med.png')
+![shap_med](img/shap_med.png)
 
 
 
