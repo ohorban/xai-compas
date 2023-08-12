@@ -90,9 +90,6 @@ Like Linear Regression, the transparency and simplicity of Logistic Regression m
 
 4. **Transparency**: The workings of a Decision Tree are entirely transparent, with no hidden calculations or assumptions.
 
-5. **Robust to Outliers**: Unlike linear models, Decision Trees are non-parametric and can model complex non-linear relationships without being overly sensitive to outliers.
-
-6. **Scalability**: Decision Trees can be easily adapted to handle both regression and classification tasks.
 
 A Decision Tree is typically represented as a binary tree, where:
 
@@ -117,7 +114,7 @@ where $y_i$ is the target value for sample $i$, and $\bar{y}$ is the mean target
 The intuitive nature, interpretability, and transparency of Decision Trees contribute to their status as a strong model in the context of explainable AI.
 
 ## Local Model-agnostic Methods
-Once we get to more complicated models such as XGBoost or Neural Netwworks, global interpretabiliy becomes a more complicated task, which is why we need to come up with better ways to intepret the model. **Local explainability** methods explain the behavior of the model at a specific data point (individual prediction). **Model-agnostic** methods can be applied to any machine learning model, regardless of its internal workings. They don't require access to the model's architecture, parameters, or training data.
+Once we get to more complicated models such as XGBoost or Neural Networks, global interpretabiliy becomes a more complicated task, which is why we need to come up with better ways to intepret the model. **Local explainability** methods explain the behavior of the model at a specific data point (individual prediction). **Model-agnostic** methods can be applied to any machine learning model, regardless of its internal workings. They don't require access to the model's architecture, parameters, or training data.
 
 ### LIME (Local Interpretable Model-agnostic Explanations)
 LIME (Local Interpretable Model-agnostic Explanations) is a technique that helps to explain the predictions of a complex machine learning model (the "black box"). It does this by constructing a **surrogate model**, which is a simpler, interpretable model that approximates the black box's behavior for a specific instance or local region. Here's how LIME utilizes a surrogate model:
@@ -130,7 +127,7 @@ LIME (Local Interpretable Model-agnostic Explanations) is a technique that helps
 
 4. **Weight the Perturbed Samples**: Assign a weight to each perturbed sample based on its similarity to the original instance, using a kernel function:
 
-   $$ w_i = \exp\left(-\frac{{\|x - x_i\|^2}}{{\sigma^2}}\right) $$
+   $$ w_i = e^{-\frac{{\|x - x_i\|^2}}{{\sigma^2}}} $$
 
 5. **Train a Surrogate Model**: Using the perturbed samples, their weights, and the black box model's predictions, train a surrogate model, such as Linear Regression, Logistic Regression or a Decision Tree.
 
@@ -300,7 +297,7 @@ plt.show()
 ```
 
 One of the interesting findings is that the most predictive feature of a person being classified as Medium risk of reoffending is purely being hispanic:
-![shap_med]('img/shap_med')
+![shap_med]('img/shap_med.png')
 
 
 
