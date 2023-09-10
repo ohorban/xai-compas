@@ -204,12 +204,21 @@ Risk-assessment algorithms in the justice system are statistical tools designed 
 
 Explainable AI (XAI) is a critical concept that can be applied to risk-assessment algorithms in the justice system to address some of the challenges and concerns surrounding their use. Unlike traditional "black box" models where the decision-making process is hidden, XAI aims to make AI decisions transparent, interpretable, and understandable to human users. By incorporating explainable AI into risk-assessment algorithms, the justice system could provide clear insights into how these tools derive their risk scores. This increased transparency could promote trust among judges, lawyers, and the public and might also enable the identification and mitigation of any underlying biases, such as racial disparities. Furthermore, explainable models can facilitate compliance with legal and ethical standards, allowing for proper scrutiny and challenge in court. In essence, explainable AI offers a pathway to more responsible and accountable use of machine learning in the justice system, bridging the gap between technological innovation and the principles of fairness, equality, and human rights that underpin legal practice. It can help ensure that these algorithms are not just tools for efficiency, but also instruments that uphold the integrity and humanity of the legal process.
 
+### The Data
+For this project, I referred to a [dataset](https://github.com/propublica/compas-analysis) posted by the [official ProPublica GitHub page](https://github.com/propublica). ProPublica is an independent, non-profit newsroom that produces investigative journalism in the public interest. They were the ones who originally performed the analysis of risk assessment tools in the justice system and [reported their findings](https://www.propublica.org/article/how-we-analyzed-the-compas-recidivism-algorithm).
+The dataset was [origianally obtained](https://www.propublica.org/article/how-we-analyzed-the-compas-recidivism-algorithm#:~:text=Through%20a%20public%20records%20request%2C%20ProPublica%20obtained%20two%20years%20worth%20of%20COMPAS%20scores%20from%20the%20Broward%20County%20Sheriff%E2%80%99s%20Office%20in%20Florida.%20We%20received%20data%20for%20all%2018%2C610%20people%20who%20were%20scored%20in%202013%20and%202014.) by ProPublica throught a public record request.
+The data shows COMPAS scores and information about individuals who were scored between 2013 and 2014 in the Broward County, Florida. These scores were used to determine whether to release or detain a defendant before their trial.
+
 I trained an XGBoost model to predict the defendants COMPAS score based on the outputs of the original risk-assessment algorithm and applied SPAH analysis to show what features where the most important when making a prediction about whether a person is going to reoffend in the future. Ideally, I would have access to the original data used for training COMPAS.
 
 Visit [xgboost_explain_predict.py](xgboost_explain_predict.py) for implementation details.
 
 One of the interesting findings is that the most predictive feature of a person being classified as Medium risk of reoffending is purely being hispanic:
 ![shap_med](img/shap_med.png)
+
+### Ethical Considerations
+Having race as one of the main predictors of the COMPAS score is slightly unexpected, since  Northpointe does not use person's race in the training of the model due to legal concerns. That would mean that our approach indicates that Hispanics commit more crime than other races and therefore that feature would increase a risk score for Hispanics.
+Another possibility is that, while race specifically is not used for model training, there mights other used features that are highly correlated with the person's race. For example, if Northpointe would to use person's zip code as one of the features for training their model, then due to housing segregation, that would be almost the same as using person's race as an input.
 
 
 
