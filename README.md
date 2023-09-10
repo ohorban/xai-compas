@@ -131,9 +131,9 @@ Once we get to more complicated models such as XGBoost or Neural Networks, globa
 $$ w_i = \exp\left(-\frac{{\|x - x_i\|^2}}{{\sigma^2}}\right) $$
 
 Here:
-- $ \|x - x_i\|^2 $ is the squared Euclidean distance between the original instance $x$ and the perturbed sample $x_i$.
-- $ \exp $ is the exponential function.
-- $ \sigma $ is a hyperparameter that determines the width of the kernel.
+- $\|x - x_i\|^2$ is the squared Euclidean distance between the original instance $x$ and the perturbed sample $x_i$.
+- $\exp$ is the exponential function.
+- $\sigma$ is a hyperparameter that determines the width of the kernel.
 
 With a larger $\sigma$, the weights of perturbed samples become more similar, broadening the influence range during surrogate model training and potentially capturing less relevant behaviors. Conversely, a smaller $\sigma$ gives weight mainly to samples very close to the original, providing a tighter focus but making the explanation more sensitive to noise.
 
