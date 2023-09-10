@@ -38,7 +38,16 @@ for col in X.columns:
 X_train, X_test, y_train, y_test = train_test_split(X, y_encoded, test_size=0.2, random_state=42)
 
 # Train the XGBoost model
-model = xgb.XGBClassifier(objective='multi:softprob', num_class=3)
+model = xgb.XGBClassifier(
+    objective='multi:softprob', 
+    num_class=3,
+    alpha=0.9,      # L1 regularization
+    reg_lambda=1.0,     # L2 regularization
+    max_depth=4,    # Maximum tree depth
+    min_child_weight=1,   # Minimum child weight
+    subsample=0.8,        # Subsampling proportion
+    colsample_bytree=0.8  # Column subsampling
+)
 model.fit(X_train, y_train)
 
 # Make predictions

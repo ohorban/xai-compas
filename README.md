@@ -1,13 +1,14 @@
 # Unveiling the Black Box
 Oleksandr Horban\
-August 2023\
+September 2023\
 Claremont McKenna College
 
 ## Abstract
+As Machine Learning models increasingly penetrate diverse sectors, the challenge of interpreting these models becomes more pronounced. This paper delves into the intricate landscape of ML interpretability, particularly focusing on the criminal justice system's risk assessment algorithms, exemplified by the COMPAS tool by Northpointe. Through a comprehensive exploration of interpretable models, such as linear regression and decision trees, to local and global model-agnostic methods like LIME and SHAP, we aim to bridge the understanding gap of ML decisions. Utilizing a dataset provided by ProPublica, an XGBoost model was trained to predict COMPAS scores. The findings underscore the significance of certain features, including controversial ones like racial attributes, in influencing predictions. By shedding light on these aspects, we aim to promote transparent, ethical, and accountable AI applications, especially in sensitive sectors like criminal justice.
 
 
 ## Introduction
-As Machine Learning models became more and more sophisticated to adapt to a growing amount of data, humans' ability to understand why these models make decisions that they make decreased. Trying to interpret a decision tree is very different from trying to interpret a deep neural network, that from the outside perspective looks like a **black box**. All we know is that data comes in and magically an answer comes out. Trying to understand what each neuron is doing will get you a one-way ticket to having a mental breakdown. This becomes a problem when interpreting a decision made by a machine learning model becomes a critical step. Consider, for example, working on a problem of binary classification of apples and oranges. Your deep neural network can learn from millions of pictures and be able to differentiate apples from oranges with 99% accuracy. One percent of apples are labeled as oranges, not the end of the world, right? In contrast, consider a risk assessment model that classifies whether the defendant should or should not be sentenced to life in prison. Now, the 1% percent of wrongfully incarcerated inmates carries a much higher price. To top it all off, we can't even tell why our model made the decision to put that 1% of people in jail. It could be the number of crimes they committed in the past, or it could be their race. In such cases understanding why the machine learning model made the decision that it did is very crucial. In reality, such an algorithm exists and is making the decision of putting people in jail. It is called COMPAS and was made by Northpointe. In this paper, I will explain techniques for ML interpretability and run through the example of applying such techniques in the criminal justice system with the hopes of improving algorithms such as COMPAS.
+In the contemporary era of big data, Machine Learning (ML) models have become intricately complex, often making it challenging for humans to decipher the reasoning behind their decisions. While a decision tree might be interpretable, the same cannot be said for deep neural networks, which to many appear as a black box. Simple decisions, like classifying apples from oranges, might not necessitate deep interpretations, but what about decisions that determine an individual's fate in the legal system? For instance, [COMPAS](https://www.equivant.com/the-making-of-the-compas-r-core/), a risk assessment tool used in the criminal justice system, can profoundly impact a person's life based on its decision. However, the why and how behind such decisions remain elusive. In this discourse, we elucidate various ML interpretability techniques and employ them to unravel the complexities of algorithms like COMPAS in the justice system.
 
 ## Interpretable Models
 There are machine learning models that make interpretability an easy task. Linear regression, logistic regression and the decision tree are commonly used interpretable models. For models like these, it is fairly easy to understand why the model made the decision that it did.
@@ -117,7 +118,7 @@ The intuitive nature, interpretability, and transparency of Decision Trees contr
 Once we get to more complicated models such as XGBoost or Neural Networks, global interpretabiliy becomes a more complicated task, which is why we need to come up with better ways to intepret the model. **Local explainability** methods explain the behavior of the model at a specific data point (individual prediction). **Model-agnostic** methods can be applied to any machine learning model, regardless of its internal workings. They don't require access to the model's architecture, parameters, or training data.
 
 ### LIME (Local Interpretable Model-agnostic Explanations)
-LIME (Local Interpretable Model-agnostic Explanations) is a technique that helps to explain the predictions of a complex machine learning model (the "black box"). It does this by constructing a **surrogate model**, which is a simpler, interpretable model that approximates the black box's behavior for a specific instance or local region. Here's how LIME utilizes a surrogate model:
+[LIME (Local Interpretable Model-agnostic Explanations)](https://arxiv.org/abs/1602.04938) is a technique that helps to explain the predictions of a complex machine learning model (the "black box"). It does this by constructing a **surrogate model**, which is a simpler, interpretable model that approximates the black box's behavior for a specific instance or local region. Here's how LIME utilizes a surrogate model:
 
 1. **Select an Instance**: Choose a specific data point (instance) that you want to understand.
 
@@ -125,9 +126,18 @@ LIME (Local Interpretable Model-agnostic Explanations) is a technique that helps
 
 3. **Get Predictions for Perturbed Samples**: Input the perturbed samples into the black box model to obtain predictions.
 
-4. **Weight the Perturbed Samples**: Assign a weight to each perturbed sample based on its similarity to the original instance, using a kernel function:
+4. **Weight the Perturbed Samples**: Assign a weight to each perturbed sample $x_i$ based on its similarity to the original instance $x$, using a kernel function:
 
 $$ w_i = \exp\left(-\frac{{\|x - x_i\|^2}}{{\sigma^2}}\right) $$
+
+Here:
+- $ \|x - x_i\|^2 $ is the squared Euclidean distance between the original instance $x$ and the perturbed sample $x_i$.
+- $ \exp $ is the exponential function.
+- $ \sigma $ is a hyperparameter that determines the width of the kernel.
+
+With a larger $\sigma$, the weights of perturbed samples become more similar, broadening the influence range during surrogate model training and potentially capturing less relevant behaviors. Conversely, a smaller $\sigma$ gives weight mainly to samples very close to the original, providing a tighter focus but making the explanation more sensitive to noise.
+
+Even though the exponential kernel function is a common choice for LIME, other kernel functions (such as Gaussian Kernel, Radial Basis Function (RBF) Kernel, Laplacian Kernel, Polynomial Kernel, Sigmoid Kernel, etc) can be used depending on the nature of the data or specific needs.
 
 5. **Train a Surrogate Model**: Using the perturbed samples, their weights, and the black box model's predictions, train a surrogate model, such as Linear Regression, Logistic Regression or a Decision Tree.
 
@@ -139,7 +149,7 @@ By employing a surrogate model, LIME makes it possible to analyze and trust the 
 ![LIME1](img/Lime1.png)
 
 ### Shapley Values
-Shapley Values originate from cooperative game theory and have been adapted to explain the output of machine learning models. They provide a unified measure of feature importance by fairly distributing the "contribution" of each feature to a prediction.
+[Shapley Values](https://www.scirp.org/(S(351jmbntvnsjt1aadkozje))/reference/referencespapers.aspx?referenceid=2126587) originate from [cooperative game theory](https://en.wikipedia.org/wiki/Cooperative_game_theory) and have been adapted to explain the output of machine learning models. They provide a unified measure of feature importance by fairly distributing the "contribution" of each feature to a prediction.
 
 Shapley Values explain how much each feature in your dataset contributes to a particular prediction. Think of a prediction as a game where each feature is a player, and the Shapley Value is the fair payout for each player, considering all possible combinations they can play in.
 
@@ -171,7 +181,7 @@ Computing Shapley Values can be computationally intensive, as it requires evalua
 Ideally, we would want to give a general overview about how a model is making predictions for all data points, not just locally. For that there exist Global methods of interpretation.
 
 ### SHAP (SHapley Additive exPlanations)
-SHAP (SHapley Additive exPlanations) is a method that leverages Shapley Values to explain the output of any machine learning model. SHAP unifies several existing feature attribution methods and provides a consistent approach to interpreting model predictions.
+SHAP (SHapley Additive exPlanations) is a method that leverages Shapley Values to explain the output of any machine learning model. SHAP unifies several existing feature attribution methods and provides a consistent approach to interpreting model predictions. If Shapley Values are used for local model explanations, SHAP is used for global model explanation.
 
 SHAP is based on Shapley Values from cooperative game theory. It calculates the fair contribution of each feature to a prediction, considering all possible combinations of features.
 
@@ -209,7 +219,10 @@ For this project, I referred to a [dataset](https://github.com/propublica/compas
 The dataset was [origianally obtained](https://www.propublica.org/article/how-we-analyzed-the-compas-recidivism-algorithm#:~:text=Through%20a%20public%20records%20request%2C%20ProPublica%20obtained%20two%20years%20worth%20of%20COMPAS%20scores%20from%20the%20Broward%20County%20Sheriff%E2%80%99s%20Office%20in%20Florida.%20We%20received%20data%20for%20all%2018%2C610%20people%20who%20were%20scored%20in%202013%20and%202014.) by ProPublica throught a public record request.
 The data shows COMPAS scores and information about individuals who were scored between 2013 and 2014 in the Broward County, Florida. These scores were used to determine whether to release or detain a defendant before their trial.
 
-I trained an XGBoost model to predict the defendants COMPAS score based on the outputs of the original risk-assessment algorithm and applied SPAH analysis to show what features where the most important when making a prediction about whether a person is going to reoffend in the future. Ideally, I would have access to the original data used for training COMPAS.
+### The Approach
+Northepointe (now Equivant) [uses a Decision Tree](https://www.equivant.com/wp-content/uploads/compas-classification-1.jpg) for their risk assessment algorithm. However, since Decision Tree is an interpretable model, I used an XGBoost model (Boosted Tree) as my classification model. To avoid overfitting, I tuned some hyperparameters such as L1 regularization.
+
+I trained an XGBoost model to predict the defendants COMPAS score based on the outputs of the original risk-assessment algorithm and applied SHAP analysis to show what features where the most important when making a prediction about whether a person is going to reoffend in the future.
 
 Visit [xgboost_explain_predict.py](xgboost_explain_predict.py) for implementation details.
 
