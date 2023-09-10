@@ -129,7 +129,7 @@ Once we get to more complicated models such as XGBoost or Neural Networks, globa
 4. **Weight the Perturbed Samples**: Assign a weight to each perturbed sample $x_i$ based on its similarity to the original instance $x$, using a kernel function:
 
 $$ w_i = \exp\left(-\frac{{\|x - x_i\|^2}}{{\sigma^2}}\right) $$
-
+***
 Here:
 - $\|x - x_i\|^2$ is the squared Euclidean distance between the original instance $x$ and the perturbed sample $x_i$.
 - $\exp$ is the exponential function.
@@ -138,7 +138,7 @@ Here:
 With a larger $\sigma$, the weights of perturbed samples become more similar, broadening the influence range during surrogate model training and potentially capturing less relevant behaviors. Conversely, a smaller $\sigma$ gives weight mainly to samples very close to the original, providing a tighter focus but making the explanation more sensitive to noise.
 
 Even though the exponential kernel function is a common choice for LIME, other kernel functions (such as Gaussian Kernel, Radial Basis Function (RBF) Kernel, Laplacian Kernel, Polynomial Kernel, Sigmoid Kernel, etc) can be used depending on the nature of the data or specific needs.
-
+***
 5. **Train a Surrogate Model**: Using the perturbed samples, their weights, and the black box model's predictions, train a surrogate model, such as Linear Regression, Logistic Regression or a Decision Tree.
 
 6. **Analyze the Surrogate Model**: By examining the surrogate model's structure and decision rules, you gain insights into why the black box model made its specific prediction for the original instance.
