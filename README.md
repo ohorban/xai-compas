@@ -2,21 +2,21 @@
 Oleksandr (Alex) Horban
 
 ## Abstract
-As the use of Machine Learning models becomes more prevelent in our lives, the challenge of interpreting these models becomes more pronounced. This paper explores ML interpretability, particularly focusing on the criminal justice system's risk assessment algorithms, exemplified by the COMPAS tool by Northpointe (now Equivant). Through an exploration of interpretable models, such as linear regression and decision trees, to local and global model-agnostic methods like LIME and SHAP, I aim to bridge the understanding gap of ML decisions. Utilizing a dataset provided by ProPublica, an XGBoost model was trained to predict COMPAS scores. The findings underscore the significance of certain features, including controversial ones like racial attributes, in influencing predictions. By shedding exploring these aspects, I aim to promote transparent, ethical, and accountable AI applications, especially in sensitive sectors like criminal justice.
+As the use of Machine Learning models becomes more prevalent in our lives, the challenge of interpreting these models becomes more pronounced. This paper explores ML interpretability, particularly focusing on the criminal justice system's risk assessment algorithms, exemplified by the COMPAS tool by Northpointe (now Equivant). Through an exploration of interpretable models, such as linear regression and decision trees, to local and global model-agnostic methods like LIME and SHAP, I aim to bridge the understanding gap of ML decisions. Utilizing a dataset provided by ProPublica, an XGBoost model was trained to predict COMPAS scores. The findings underscore the significance of certain features, including controversial ones like racial attributes, in influencing predictions. By shedding and exploring these aspects, I aim to promote transparent, ethical, and accountable AI applications, especially in sensitive sectors like criminal justice.
 
 
 ## Introduction
-In the contemporary era of big data, Machine Learning models have become very complex, often making it challenging for humans to understand the reasoning behind their decisions. While a decision tree might be interpretable, the same cannot be said for deep neural networks, which to many appear as a black box. Simple decisions, like classifying apples from oranges, might not requir deep and clear interpretations, but what about decisions that determine an individual's fate in the legal system? For instance, [COMPAS](https://www.equivant.com/the-making-of-the-compas-r-core/), a risk assessment tool used in the criminal justice system, can impact a person's life based on its decision. However, the why and how behind such decisions remain not totally clear. In this discussion, I explain different ML interpretation methods and use them to understand algorithms like COMPAS in the justice system.
+In the contemporary era of big data, Machine Learning models have become very complex, often making it challenging for humans to understand the reasoning behind their decisions. While a decision tree might be interpretable, the same cannot be said for deep neural networks, which to many appear as a black box. Simple decisions, like classifying apples from oranges, might not require deep and clear interpretations, but what about decisions that determine an individual's fate in the legal system? For instance, [COMPAS](https://www.equivant.com/the-making-of-the-compas-r-core/), a risk assessment tool used in the criminal justice system, can impact a person's life based on its decision. However, the why and how behind such decisions remain not totally clear. In this discussion, I explain different ML interpretation methods and use them to understand algorithms like COMPAS in the justice system.
 
 ## Interpretable Models
-There are machine learning models that make interpretability an easy task. Linear regression, logistic regression and the decision tree are commonly used interpretable models. For models like these, it is fairly easy to understand why the model made the decision that it did.
+There are machine learning models that make interpretability an easy task. Linear regression, logistic regression, and the decision tree are commonly used interpretable models. For models like these, it is fairly easy to understand why the model made the decision that it did.
 ### Linear Regression
 
 1. **Simplicity**: Linear Regression models the relationship between a dependent variable \( y \) and one or more independent variables \( X \) using a linear equation. This equation is intuitive and easy to understand.
 
 2. **Interpretability of Coefficients**: The coefficients of the linear regression model represent the change in the output for a one-unit change in the corresponding input. This provides a straightforward way to interpret the importance of each variable.
 
-3. **Global Model Interpretation**: Linear regression provides a global interpretation of the model since it defines a single relationship across the entire data space, unlike more complex models that might have local interpretations. (more about this in following chapters)
+3. **Global Model Interpretation**: Linear regression provides a global interpretation of the model since it defines a single relationship across the entire data space, unlike more complex models that might have local interpretations. (more about this in the following chapters)
 
 4. **Transparency**: The mechanics of linear regression are well-understood, and there are no hidden layers or complex structures that are hard to interpret, as is the case with some neural networks.
 
@@ -213,11 +213,11 @@ Risk-assessment algorithms in the justice system are statistical tools designed 
 
 ### The Data
 For this project, I referred to a [dataset](https://github.com/propublica/compas-analysis) posted by the [official ProPublica GitHub page](https://github.com/propublica). ProPublica is an independent, non-profit newsroom that produces investigative journalism in the public interest. They were the ones who originally performed the analysis of risk assessment tools in the justice system and [reported their findings](https://www.propublica.org/article/how-we-analyzed-the-compas-recidivism-algorithm).
-The dataset was [origianally obtained](https://www.propublica.org/article/how-we-analyzed-the-compas-recidivism-algorithm#:~:text=Through%20a%20public%20records%20request%2C%20ProPublica%20obtained%20two%20years%20worth%20of%20COMPAS%20scores%20from%20the%20Broward%20County%20Sheriff%E2%80%99s%20Office%20in%20Florida.%20We%20received%20data%20for%20all%2018%2C610%20people%20who%20were%20scored%20in%202013%20and%202014.) by ProPublica throught a public record request.
-The data shows COMPAS scores and information about individuals who were scored between 2013 and 2014 in the Broward County, Florida. These scores were used to determine whether to release or detain a defendant before their trial.
+The dataset was [originally obtained](https://www.propublica.org/article/how-we-analyzed-the-compas-recidivism-algorithm#:~:text=Through%20a%20public%20records%20request%2C%20ProPublica%20obtained%20two%20years%20worth%20of%20COMPAS%20scores%20from%20the%20Broward%20County%20Sheriff%E2%80%99s%20Office%20in%20Florida.%20We%20received%20data%20for%20all%2018%2C610%20people%20who%20were%20scored%20in%202013%20and%202014.) by ProPublica through a public record request.
+The data shows COMPAS scores and information about individuals who were scored between 2013 and 2014 in Broward County, Florida. These scores were used to determine whether to release or detain a defendant before their trial.
 
 ### The Approach
-Northpointe (now Equivant) [uses a Decision Tree](https://www.equivant.com/wp-content/uploads/compas-classification-1.jpg) for their risk assessment algorithm. However, since Decision Tree is an interpretable model, I used an XGBoost model (Boosted Tree) as my classification model. To avoid overfitting, I went through a process of hyperparameter optimization as you can see in [xgboost_explain_predict.py](xgboost_explain_predict.py). The hyperparameters that where are optimized as well as the choices for the hyperparameters are as follows:
+Northpointe (now Equivant) [uses a Decision Tree](https://www.equivant.com/wp-content/uploads/compas-classification-1.jpg) for their risk assessment algorithm. However, since the Decision Tree is an interpretable model, I used an XGBoost model (Boosted Tree) as my classification model. To avoid overfitting, I went through a process of hyperparameter optimization as you can see in [xgboost_explain_predict.py](xgboost_explain_predict.py). The hyperparameters that are optimized as well as the choices for the hyperparameters are as follows:
 ```
 # hyperparameters and their possible values
 param_grid = {
@@ -232,19 +232,19 @@ param_grid = {
 }
 ```
 
-I trained an XGBoost model to predict the defendants COMPAS score based on the outputs of the original risk-assessment algorithm and applied SHAP analysis to show what features where the most important when making a prediction about whether a person is going to reoffend in the future.
+I trained an XGBoost model to predict the defendant's COMPAS score based on the outputs of the original risk-assessment algorithm and applied SHAP analysis to show what features were the most important when making a prediction about whether a person is going to re-offend in the future.
 
 Visit [xgboost_explain_predict.py](xgboost_explain_predict.py) for implementation details.
 
 Here is a waterfall plot that shows the sequential contribution of individual feature values to the prediction. Each step in the plot corresponds to a feature's SHAP value, with its length indicating the magnitude of its impact and its direction (right or left) revealing the feature's positive or negative influence on the prediction. So, for example, the following plot shows that the race feature "Hispanic" has a SHAP value of around 0.3
 ![shap_med](img/shap_med.png)
 
-As you can see from the picture, first name of "joel" is the second best predictor of Medium classification. This can suggest that the model is overfit to the data even with regularization. However, the SHAP score for the said feature is very small (less than 0.1). In practice, features with such small SHAP scores would be ignored. Same logic applies to feature `MaritalStatus=Single` since single people are more likely to reoffend in the real world.
+As you can see from the picture, the first name of "joel" is the second-best predictor of Medium classification. This can suggest that the model is overfit to the data even with regularization. However, the SHAP score for the said feature is very small (less than 0.1). In practice, features with such small SHAP scores would be ignored. The same logic applies to the feature `MaritalStatus=Single` since single people are more likely to re-offend in the real world.
 
 ### Ethical Considerations
-Having race as one of the main predictors of the COMPAS score is slightly unexpected, since  Northpointe does not use person's race in the training of the model due to legal concerns. That would mean that our approach indicates that Hispanics commit more crime than other races and therefore that feature would increase a risk score for Hispanics.
-Another possibility is that, while race specifically is not used for model training, there mights other used features that are highly correlated with the person's race. For example, if Northpointe would to use person's zip code as one of the features for training their model, then due to housing segregation, that would be almost the same as using person's race as an input.
-Overall, [risk assessment algorithms have showed signs of racial discrimination](https://www.propublica.org/article/machine-bias-risk-assessments-in-criminal-sentencing) and should be used very carefully when deciding on people's features. Using AI explainability techniques is one of the ways to ensure that the algorithms are not biased to certain races.
+Having race as one of the main predictors of the COMPAS score is slightly unexpected since  Northpointe does not use a person's race in the training of the model due to legal concerns. That would mean that our approach indicates that Hispanics commit more crime than other races and therefore that feature would increase a risk score for Hispanics.
+Another possibility is that, while race specifically is not used for model training, there might other used features that are highly correlated with the person's race. For example, if Northpointe would use a person's zip code as one of the features for training their model, then due to housing segregation, that would be almost the same as using a person's race as an input.
+Overall, [risk assessment algorithms have shown signs of racial discrimination](https://www.propublica.org/article/machine-bias-risk-assessments-in-criminal-sentencing) and should be used very carefully when deciding on people's features. Using AI explainability techniques is one of the ways to ensure that the algorithms are not biased toward certain races.
 
 
 
