@@ -2,7 +2,7 @@
 Oleksandr (Alex) Horban
 
 ## Abstract
-As Machine Learning models increasingly penetrate diverse sectors, the challenge of interpreting these models becomes more pronounced. This paper delves into the intricate landscape of ML interpretability, particularly focusing on the criminal justice system's risk assessment algorithms, exemplified by the COMPAS tool by Northpointe. Through a comprehensive exploration of interpretable models, such as linear regression and decision trees, to local and global model-agnostic methods like LIME and SHAP, we aim to bridge the understanding gap of ML decisions. Utilizing a dataset provided by ProPublica, an XGBoost model was trained to predict COMPAS scores. The findings underscore the significance of certain features, including controversial ones like racial attributes, in influencing predictions. By shedding light on these aspects, we aim to promote transparent, ethical, and accountable AI applications, especially in sensitive sectors like criminal justice.
+As Machine Learning models increasingly penetrate diverse sectors, the challenge of interpreting these models becomes more pronounced. This paper delves into the intricate landscape of ML interpretability, particularly focusing on the criminal justice system's risk assessment algorithms, exemplified by the COMPAS tool by Northpointe (now Equivant). Through a comprehensive exploration of interpretable models, such as linear regression and decision trees, to local and global model-agnostic methods like LIME and SHAP, we aim to bridge the understanding gap of ML decisions. Utilizing a dataset provided by ProPublica, an XGBoost model was trained to predict COMPAS scores. The findings underscore the significance of certain features, including controversial ones like racial attributes, in influencing predictions. By shedding light on these aspects, we aim to promote transparent, ethical, and accountable AI applications, especially in sensitive sectors like criminal justice.
 
 
 ## Introduction
@@ -127,6 +127,8 @@ Once we get to more complicated models such as XGBoost or Neural Networks, globa
 4. **Weight the Perturbed Samples**: Assign a weight to each perturbed sample $x_i$ based on its similarity to the original instance $x$, using a kernel function:
 
 $$ w_i = \exp\left(-\frac{{\|x - x_i\|^2}}{{\sigma^2}}\right) $$
+
+\
 Here:
 - $\|x - x_i\|^2$ is the squared Euclidean distance between the original instance $x$ and the perturbed sample $x_i$.
 - $\exp$ is the exponential function.
@@ -215,7 +217,20 @@ The dataset was [origianally obtained](https://www.propublica.org/article/how-we
 The data shows COMPAS scores and information about individuals who were scored between 2013 and 2014 in the Broward County, Florida. These scores were used to determine whether to release or detain a defendant before their trial.
 
 ### The Approach
-Northepointe (now Equivant) [uses a Decision Tree](https://www.equivant.com/wp-content/uploads/compas-classification-1.jpg) for their risk assessment algorithm. However, since Decision Tree is an interpretable model, I used an XGBoost model (Boosted Tree) as my classification model. To avoid overfitting, I tuned some hyperparameters such as L1 regularization.
+Northpointe (now Equivant) [uses a Decision Tree](https://www.equivant.com/wp-content/uploads/compas-classification-1.jpg) for their risk assessment algorithm. However, since Decision Tree is an interpretable model, I used an XGBoost model (Boosted Tree) as my classification model. To avoid overfitting, I went through a process of hyperparameter optimization as you can see in [xgboost_explain_predict.py](xgboost_explain_predict.py). The hyperparameters that where are optimized as well as the choices for the hyperparameters are as follows:
+```
+# hyperparameters and their possible values
+param_grid = {
+    'objective': ['multi:softprob'],
+    'num_class': [3],
+    'alpha': [0.1, 0.5, 1.0],       # L1 regularization
+    'reg_lambda': [0.5, 1.0, 1.5],  # L2 regularization
+    'max_depth': [3, 4, 5],         # Maximum tree depth
+    'min_child_weight': [1, 5, 10], # Minimum child weight
+    'subsample': [0.7, 0.8, 0.9],   # Subsampling proportion
+    'colsample_bytree': [0.7, 0.8, 0.9] # Column subsampling
+}
+```
 
 I trained an XGBoost model to predict the defendants COMPAS score based on the outputs of the original risk-assessment algorithm and applied SHAP analysis to show what features where the most important when making a prediction about whether a person is going to reoffend in the future.
 
