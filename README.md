@@ -224,7 +224,7 @@ Visit [xgboost_explain_predict.py](xgboost_explain_predict.py) for implementatio
 Here is a waterfall plot that shows the sequential contribution of individual feature values to the prediction. Each step in the plot corresponds to a feature's SHAP value, with its length indicating the magnitude of its impact and its direction (right or left) revealing the feature's positive or negative influence on the prediction. So, for example, the following plot shows that the race feature "Hispanic" has a SHAP value of around 0.3
 ![shap_med](img/shap_med.png)
 
-As you can see from the picture, first name of "joel" is the second best predictor of Medium classification. This can suggest that the model is overfit to the data even with regularization. However, the SHAP score for the said feature is very small (less than 0.1). In practice, features with such small SHAP scores would be ignored.
+As you can see from the picture, first name of "joel" is the second best predictor of Medium classification. This can suggest that the model is overfit to the data even with regularization. However, the SHAP score for the said feature is very small (less than 0.1). In practice, features with such small SHAP scores would be ignored. Same logic applies to feature `MaritalStatus=Single` since single people are more likely to reoffend in the real world.
 
 ### Ethical Considerations
 Having race as one of the main predictors of the COMPAS score is slightly unexpected, since  Northpointe does not use person's race in the training of the model due to legal concerns. That would mean that our approach indicates that Hispanics commit more crime than other races and therefore that feature would increase a risk score for Hispanics.
