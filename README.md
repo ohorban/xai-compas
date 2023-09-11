@@ -186,7 +186,9 @@ SHAP is based on Shapley Values from cooperative game theory. It calculates the 
 SHAP assigns each feature an importance value for a particular prediction that is additive. The sum of the SHAP values for all features equals the difference between the model's prediction and the average prediction for all instances.
 
 For a given instance and prediction model, the SHAP value for feature $i$ is computed similarly to the Shapley Value:
-![shap_equation](img/shap_equation.png)
+\
+$$ \text{SHAP}_i(f) = \sum_{S \subseteq N \setminus \{i\}} \frac{{|S|!(|N|-|S|-1)!}}{{|N|!}} [f(S \cup \{i\}) - f(S)] $$
+\
 
 Where:
 - $N$: The set of all features.
