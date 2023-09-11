@@ -1,7 +1,5 @@
 # Unveiling the Black Box
-Oleksandr Horban\
-September 2023\
-Claremont McKenna College
+Oleksandr (Alex) Horban
 
 ## Abstract
 As Machine Learning models increasingly penetrate diverse sectors, the challenge of interpreting these models becomes more pronounced. This paper delves into the intricate landscape of ML interpretability, particularly focusing on the criminal justice system's risk assessment algorithms, exemplified by the COMPAS tool by Northpointe. Through a comprehensive exploration of interpretable models, such as linear regression and decision trees, to local and global model-agnostic methods like LIME and SHAP, we aim to bridge the understanding gap of ML decisions. Utilizing a dataset provided by ProPublica, an XGBoost model was trained to predict COMPAS scores. The findings underscore the significance of certain features, including controversial ones like racial attributes, in influencing predictions. By shedding light on these aspects, we aim to promote transparent, ethical, and accountable AI applications, especially in sensitive sectors like criminal justice.
@@ -129,7 +127,6 @@ Once we get to more complicated models such as XGBoost or Neural Networks, globa
 4. **Weight the Perturbed Samples**: Assign a weight to each perturbed sample $x_i$ based on its similarity to the original instance $x$, using a kernel function:
 
 $$ w_i = \exp\left(-\frac{{\|x - x_i\|^2}}{{\sigma^2}}\right) $$
-***
 Here:
 - $\|x - x_i\|^2$ is the squared Euclidean distance between the original instance $x$ and the perturbed sample $x_i$.
 - $\exp$ is the exponential function.
@@ -138,7 +135,6 @@ Here:
 With a larger $\sigma$, the weights of perturbed samples become more similar, broadening the influence range during surrogate model training and potentially capturing less relevant behaviors. Conversely, a smaller $\sigma$ gives weight mainly to samples very close to the original, providing a tighter focus but making the explanation more sensitive to noise.
 
 Even though the exponential kernel function is a common choice for LIME, other kernel functions (such as Gaussian Kernel, Radial Basis Function (RBF) Kernel, Laplacian Kernel, Polynomial Kernel, Sigmoid Kernel, etc) can be used depending on the nature of the data or specific needs.
-***
 5. **Train a Surrogate Model**: Using the perturbed samples, their weights, and the black box model's predictions, train a surrogate model, such as Linear Regression, Logistic Regression or a Decision Tree.
 
 6. **Analyze the Surrogate Model**: By examining the surrogate model's structure and decision rules, you gain insights into why the black box model made its specific prediction for the original instance.
@@ -189,7 +185,7 @@ SHAP assigns each feature an importance value for a particular prediction that i
 
 For a given instance and prediction model, the SHAP value for feature $i$ is computed similarly to the Shapley Value:
 
-$$ \text{SHAP}_i(f) = \sum_{S \subseteq N \setminus \{i\}} \frac{{|S|!(|N|-|S|-1)!}}{{|N|!}} [f(S \cup \{i\}) - f(S)] $$
+$$ \mathrm{SHAP}_i(f) = \sum_{S \subseteq N \setminus \{i\}} \frac{{|S|!(|N|-|S|-1)!}}{{|N|!}} [f(S \cup \{i\}) - f(S)] $$
 
 Where:
 - $N$: The set of all features.
@@ -226,8 +222,10 @@ I trained an XGBoost model to predict the defendants COMPAS score based on the o
 
 Visit [xgboost_explain_predict.py](xgboost_explain_predict.py) for implementation details.
 
-One of the interesting findings is that the most predictive feature of a person being classified as Medium risk of reoffending is purely being hispanic:
+Here is a waterfall plot that shows the sequential contribution of individual feature values to the prediction. Each step in the plot corresponds to a feature's SHAP value, with its length indicating the magnitude of its impact and its direction (right or left) revealing the feature's positive or negative influence on the prediction. So, for example, the following plot shows that the race feature "Hispanic" has a SHAP value of around 0.3
 ![shap_med](img/shap_med.png)
+
+As you can see from the picture, first name of "joel" is the second best predictor of Medium classification. This can suggest that the model is overfit to the data even with regularization. However, the SHAP score for the said feature is very small (less than 0.1). In practice, features with such small SHAP scores would be ignored.
 
 ### Ethical Considerations
 Having race as one of the main predictors of the COMPAS score is slightly unexpected, since  Northpointe does not use person's race in the training of the model due to legal concerns. That would mean that our approach indicates that Hispanics commit more crime than other races and therefore that feature would increase a risk score for Hispanics.
