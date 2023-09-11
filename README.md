@@ -187,12 +187,7 @@ For a given instance and prediction model, the SHAP value for feature $i$ is com
 
 $$ \text{SHAP}_i(f) = \sum_{S \subseteq N \setminus \{i\}} \frac{{|S|!(|N|-|S|-1)!}}{{|N|!}} [f(S \cup \{i\}) - f(S)] $$
 
-$$ \text{SHAP}_i(f) = \sum_{S} \frac{{|S|}}{{|N|!}} $$
-
-$$ \text{SHAP}_i(f) = \sum_{S \subseteq N} \frac{{|S|}}{{|N|!}} $$
-
-
-$$ \text{SHAP}_i(f) = \sum_{S \subseteq N \setminus \{i\}} \frac{{|S|}}{{|N|!}} $$
+$$ \text{SHAP}_i(f) $$
 
 
 Where:
@@ -201,7 +196,7 @@ Where:
 - $f(S)$: The prediction made by the model with only the features in $S$.
 - $f(S \cup \{i\})$: The prediction made by the model with the features in $S$ plus feature $i$.
 - $|S|$: The number of features in $S$.
-- $N|$: The total number of features.
+- $|N|$: The total number of features.
 
 SHAP values provide insights into:
 - **Individual Predictions**: How each feature contributes to a particular prediction.
