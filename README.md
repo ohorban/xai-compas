@@ -187,7 +187,7 @@ SHAP assigns each feature an importance value for a particular prediction that i
 
 For a given instance and prediction model, the SHAP value for feature $i$ is computed similarly to the Shapley Value:
 
-[shap_eq](img/shap_equation.png)
+![shap_eq](img/shap_equation.png)
 
 
 Where:
