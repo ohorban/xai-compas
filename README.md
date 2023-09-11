@@ -185,7 +185,15 @@ SHAP assigns each feature an importance value for a particular prediction that i
 
 For a given instance and prediction model, the SHAP value for feature $i$ is computed similarly to the Shapley Value:
 
-$$ \mathrm{SHAP}_i(f) = \sum_{S \subseteq N \setminus \{i\}} \frac{{|S|!(|N|-|S|-1)!}}{{|N|!}} [f(S \cup \{i\}) - f(S)] $$
+$$ \text{SHAP}_i(f) = \sum_{S \subseteq N \setminus \{i\}} \frac{{|S|!(|N|-|S|-1)!}}{{|N|!}} [f(S \cup \{i\}) - f(S)] $$
+
+$$ \text{SHAP}_i(f) = \sum_{S} \frac{{|S|}}{{|N|!}} $$
+
+$$ \text{SHAP}_i(f) = \sum_{S \subseteq N} \frac{{|S|}}{{|N|!}} $$
+
+
+$$ \text{SHAP}_i(f) = \sum_{S \subseteq N \setminus \{i\}} \frac{{|S|}}{{|N|!}} $$
+
 
 Where:
 - $N$: The set of all features.
