@@ -136,7 +136,7 @@ Here:
 
 With a larger $\sigma$, the weights of perturbed samples become more similar, broadening the influence range during surrogate model training and potentially capturing less relevant behaviors. Conversely, a smaller $\sigma$ gives weight mainly to samples very close to the original, providing a tighter focus but making the explanation more sensitive to noise.
 
-Even though the exponential kernel function is a common choice for LIME, other kernel functions (such as Gaussian Kernel, Radial Basis Function (RBF) Kernel, Laplacian Kernel, Polynomial Kernel, Sigmoid Kernel, etc) can be used depending on the nature of the data or specific needs.\
+Even though the exponential kernel function is a common choice for LIME, other kernel functions (such as Gaussian Kernel, Radial Basis Function (RBF) Kernel, Laplacian Kernel, Polynomial Kernel, Sigmoid Kernel, etc) can be used depending on the nature of the data or specific needs.
 
 5. **Train a Surrogate Model**: Using the perturbed samples, their weights, and the black box model's predictions, train a surrogate model, such as Linear Regression, Logistic Regression or a Decision Tree.
 
